@@ -1,4 +1,5 @@
 const Todo = require("../model/todoSchema");
+const AppError = require("../utils/appError");
 const cathcAsyncErrors = require("../utils/cathcAsyncErrors");
 
 const getAllTodos = cathcAsyncErrors(async (req, res, next) => {
@@ -14,6 +15,10 @@ const getAllTodos = cathcAsyncErrors(async (req, res, next) => {
 
 const getTodo = cathcAsyncErrors(async (req, res, next) => {
   const todo = await Todo.findById(req.params.id);
+
+  if (!todo) {
+    return next(new AppError("Todo not found!", 404));
+  }
 
   res.status(200).json({
     status: "success",
@@ -39,6 +44,10 @@ const updateTodo = cathcAsyncErrors(async (req, res, next) => {
     runValidators: true,
   });
 
+  if (!updatedTodo) {
+    return next(new AppError("Todo not found!", 404));
+  }
+
   res.status(200).json({
     status: "success",
     data: {
@@ -48,7 +57,12 @@ const updateTodo = cathcAsyncErrors(async (req, res, next) => {
 });
 
 const deleteTodo = cathcAsyncErrors(async (req, res, next) => {
-  await Todo.findByIdAndDelete(req.params.id);
+  const deletedTodo = await Todo.findByIdAndDelete(req.params.id);
+
+  if (!deletedTodo) {
+    return next(new AppError("Todo not found!", 404));
+  }
+
   res.status(204).json({
     status: "success",
     data: null,
