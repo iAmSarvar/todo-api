@@ -1,25 +1,21 @@
 const express = require("express");
 const todoRouter = require("./routes/todoRoutes");
 const AppError = require("./utils/appError");
+const globalErrorHandler = require("./controllers/errorController");
 
 const app = express();
 
 app.use(express.json());
 
+//routes
 app.use("/api/v1/todos", todoRouter);
 
+// 404 pages
 app.all("*", (req, res, next) => {
   next(new AppError(`Page ${req.originalUrl} not found!`, 404));
 });
 
-app.use((error, req, res, next) => {
-  error.status = error.status || "error";
-  error.statusCode = error.statusCode || 500;
-
-  res.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-  });
-});
+// global error handling middleware
+app.use(globalErrorHandler);
 
 module.exports = app;
