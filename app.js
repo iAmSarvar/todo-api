@@ -1,5 +1,6 @@
 const express = require("express");
 const todoRouter = require("./routes/todoRoutes");
+const AppError = require("./utils/appError");
 
 const app = express();
 
@@ -8,11 +9,7 @@ app.use(express.json());
 app.use("/api/v1/todos", todoRouter);
 
 app.all("*", (req, res, next) => {
-  const error = new Error(`Page ${req.originalUrl} not found!`);
-  error.status = "fail";
-  error.statusCode = 404;
-
-  next(error);
+  next(new AppError(`Page ${req.originalUrl} not found!`, 404));
 });
 
 app.use((error, req, res, next) => {
