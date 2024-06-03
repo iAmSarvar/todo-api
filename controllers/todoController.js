@@ -1,9 +1,12 @@
+const Todo = require("../models/todoSchema");
+
 const getAllTodos = async (req, res) => {
+  const todos = await Todo.find();
   try {
     res.status(200).json({
       status: "success",
       data: {
-        todo: "All todos here!",
+        todos,
       },
     });
   } catch (error) {
